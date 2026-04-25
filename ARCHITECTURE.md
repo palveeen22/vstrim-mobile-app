@@ -15,8 +15,9 @@ src/
 │   │   ├── hooks/
 │   │   │   └── useAuth.ts           # useLogin, useRegister, useLogout
 │   │   ├── screens/
-│   │   │   ├── LoginScreen.tsx
-│   │   │   └── RegisterScreen.tsx
+│   │   │   ├── AuthScreen.tsx
+│   │   │   ├── SetupProfileScreen.tsx
+│   │   │   └── OtpScreen.tsx
 │   │   ├── store/
 │   │   │   └── auth.store.ts        # Zustand: user, token
 │   │   ├── types/
