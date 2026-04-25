@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,41 +10,35 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
-} from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { BlurView } from '@react-native-community/blur'
-import { Colors, Spacing, Typography } from '@/shared/theme/tokens'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { AuthStackParamList } from '../navigations/AuthStackNavigator'
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { BlurView } from '@react-native-community/blur';
+import { Colors, Spacing, Typography } from '@/shared/theme/tokens';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { AuthStackParamList } from '../navigations/AuthStackNavigator';
+import { useSendOtp } from '../hooks/useSendOtp';
 
-type TProps = {
-  navigation: NativeStackNavigationProp<AuthStackParamList, 'PhoneScreen'>;
-};
+type Props = NativeStackScreenProps<AuthStackParamList, 'PhoneScreen'>;
 
-export function AuthScreen({ navigation }: TProps) {
-  const [phone, setPhone] = useState<string>('')
+export function AuthScreen({ navigation }: Props) {
+  const [phone, setPhone] = useState('');
+  const sendOtp = useSendOtp();
 
-const handleChange = (value: string) => {
-  const cleaned = value.replace(/\D/g, '');
+  const handleChange = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    const normalized = cleaned.startsWith('7') ? cleaned.slice(1) : cleaned;
+    setPhone(normalized);
+  };
 
-  // optional: kalau user paste nomor dengan 7 di depan
-  const normalized = cleaned.startsWith('7')
-    ? cleaned.slice(1)
-    : cleaned;
-
-  setPhone(normalized);
-};
-
-  const handleSubmit = (value: string) => {
-    console.log(value);
-
-    if (value === "+799920057") {
-      navigation.navigate('OtpScreen', {
-        phone: value,
-        method: 'sms',
-        isNewUser: false,
-      });
-    }
+  const handleSubmit = async () => {
+    if (phone.length < 10) return;
+    const fullPhone = `+7${phone}`;
+    const result = await sendOtp.mutateAsync(fullPhone);
+    navigation.navigate('OtpScreen', {
+      phone: fullPhone,
+      method: result.method,
+      isNewUser: result.isNewUser,
+    });
   };
 
   return (
@@ -55,20 +49,14 @@ const handleChange = (value: string) => {
     >
       <BlurView style={StyleSheet.absoluteFill} blurType="light" blurAmount={20} />
 
-      <SafeAreaView style={styles.SafeAra}>
+      <SafeAreaView style={styles.safeArea}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <KeyboardAvoidingView
             style={styles.flex}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
             <View style={styles.container}>
-
-              {/* TITLE */}
-              <Text style={styles.title}>
-                Введите ваш номер
-              </Text>
-
-              {/* INPUT */}
+              <Text style={styles.title}>Введите ваш номер</Text>
               <View style={styles.inputWrapper}>
                 <Text style={styles.flag}>🇷🇺</Text>
                 <TextInput
@@ -77,11 +65,14 @@ const handleChange = (value: string) => {
                   value={phone}
                   onChangeText={handleChange}
                   maxLength={12}
+                  autoFocus
                 />
               </View>
+              {sendOtp.isError && (
+                <Text style={styles.error}>Ошибка. Попробуйте снова.</Text>
+              )}
             </View>
 
-            {/* BOTTOM SECTION */}
             <View style={styles.bottom}>
               <Text style={styles.terms}>
                 Вводя номер, вы соглашаетесь с{' '}
@@ -89,34 +80,32 @@ const handleChange = (value: string) => {
                 <Text style={styles.link}>условиями использования</Text>
               </Text>
 
-              <TouchableOpacity onPress={() => handleSubmit(phone)} style={styles.button}>
-                <Text style={styles.buttonText}>Поехали</Text>
+              <TouchableOpacity
+                onPress={handleSubmit}
+                style={[styles.button, (phone.length < 10 || sendOtp.isPending) && styles.buttonDisabled]}
+                disabled={phone.length < 10 || sendOtp.isPending}
+              >
+                <Text style={styles.buttonText}>
+                  {sendOtp.isPending ? 'Отправка...' : 'Поехали'}
+                </Text>
               </TouchableOpacity>
             </View>
-
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
       </SafeAreaView>
     </ImageBackground>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  SafeAra: {
-    flex: 1
-  },
-  flex: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  background: {
-    flex: 1,
-  },
+  safeArea: { flex: 1 },
+  flex: { flex: 1, justifyContent: 'space-between' },
+  background: { flex: 1 },
   container: {
     flexDirection: 'column',
     alignItems: 'center',
     marginTop: 140,
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing.lg,
   },
   title: {
     fontFamily: Typography.fonts.blackItalic,
@@ -126,47 +115,46 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   inputWrapper: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 30,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.md,
     height: 55,
   },
-  flag: {
-    fontSize: 20,
-    marginRight: 10,
-  },
+  flag: { fontSize: 20, marginRight: 10 },
   input: {
     flex: 1,
     fontSize: 20,
-    color: '#000',
-    fontFamily: Typography.fonts.medium
+    color: Colors.text,
+    fontFamily: Typography.fonts.medium,
   },
-  bottom: {
-    paddingHorizontal: 24,
-    paddingBottom: 30,
+  error: {
+    marginTop: Spacing.sm,
+    color: Colors.error,
+    fontSize: Typography.size.sm,
+    fontFamily: Typography.fonts.regular,
   },
+  bottom: { paddingHorizontal: Spacing.lg, paddingBottom: 30 },
   terms: {
     textAlign: 'center',
-    fontSize: 12,
-    color: '#333',
-    marginBottom: 16,
+    fontSize: Typography.size.xs,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.md,
   },
-  link: {
-    textDecorationLine: 'underline',
-    fontWeight: '500',
-  },
+  link: { textDecorationLine: 'underline', fontWeight: '500' },
   button: {
-    backgroundColor: '#000',
+    backgroundColor: Colors.black,
     height: 55,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  buttonDisabled: { opacity: 0.4 },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    color: Colors.white,
+    fontSize: Typography.size.md,
+    fontFamily: Typography.fonts.semiBold,
   },
-})
+});
