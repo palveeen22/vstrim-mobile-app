@@ -4,93 +4,178 @@
 
 ```
 src/
-├── app/
-│   ├── _layout.tsx            # Root layout
-│   ├── (auth)/
-│   │   ├── login.tsx
-│   │   └── register.tsx
-│   └── (tabs)/
-│       ├── _layout.tsx        # Tab navigator
-│       ├── map.tsx            # Tab 1
-│       ├── feed.tsx           # Tab 2
-│       ├── add.tsx            # Tab 3 (+ button)
-│       ├── search.tsx         # Tab 4
-│       └── profile.tsx        # Tab 5
 │
 ├── features/
-│   ├── map/
+│   ├── auth/
+│   │   ├── api/
+│   │   │   └── auth.api.ts          # Semua API call terkait auth
 │   │   ├── components/
-│   │   │   ├── MapView.tsx
-│   │   │   ├── PlacePin.tsx
-│   │   │   └── PlaceBottomDrawer.tsx   # Reanimated bottom sheet
+│   │   │   ├── LoginForm.tsx
+│   │   │   └── RegisterForm.tsx
 │   │   ├── hooks/
-│   │   │   └── useNearbyPlaces.ts      # React Query
-│   │   └── map.store.ts                # Zustand: selected pin, region
+│   │   │   └── useAuth.ts           # useLogin, useRegister, useLogout
+│   │   ├── screens/
+│   │   │   ├── LoginScreen.tsx
+│   │   │   └── RegisterScreen.tsx
+│   │   ├── store/
+│   │   │   └── auth.store.ts        # Zustand: user, token
+│   │   ├── types/
+│   │   │   └── auth.types.ts
+│   │   └── index.ts                 # Public API fitur ini
+│   │
+│   ├── map/
+│   │   ├── api/
+│   │   │   └── map.api.ts           # getNearbyPlaces
+│   │   ├── components/
+│   │   │   ├── PlacePin.tsx         # Custom map marker
+│   │   │   ├── PlaceBottomDrawer.tsx  # Reanimated bottom sheet
+│   │   │   └── CategoryFilter.tsx   # Horizontal filter chips
+│   │   ├── hooks/
+│   │   │   ├── useNearbyPlaces.ts   # React Query: places in radius
+│   │   │   └── useUserLocation.ts   # GPS hook
+│   │   ├── screens/
+│   │   │   └── MapScreen.tsx
+│   │   ├── store/
+│   │   │   └── map.store.ts         # Zustand: selectedPin, region, activeCategory
+│   │   ├── types/
+│   │   │   └── map.types.ts
+│   │   └── index.ts
 │   │
 │   ├── place/
+│   │   ├── api/
+│   │   │   └── place.api.ts         # getPlace, createPlace, savePlace
 │   │   ├── components/
-│   │   │   ├── PlaceDetailScreen.tsx
-│   │   │   ├── ReviewCard.tsx
-│   │   │   ├── ReviewMediaGallery.tsx
-│   │   │   └── AddPlaceSheet.tsx
+│   │   │   ├── PlaceHeader.tsx      # Hero + info
+│   │   │   ├── ReviewCard.tsx       # Card di list review
+│   │   │   ├── ReviewMediaRow.tsx   # Foto/video preview strip
+│   │   │   └── PlaceRatingSummary.tsx
 │   │   ├── hooks/
 │   │   │   ├── usePlaceDetail.ts
-│   │   │   └── useAddPlace.ts
-│   │   └── place.types.ts
+│   │   │   ├── usePlaceReviews.ts
+│   │   │   └── useSavePlace.ts      # Optimistic update
+│   │   ├── screens/
+│   │   │   ├── PlaceDetailScreen.tsx
+│   │   │   └── AddPlaceScreen.tsx
+│   │   ├── types/
+│   │   │   └── place.types.ts
+│   │   └── index.ts
 │   │
 │   ├── review/
+│   │   ├── api/
+│   │   │   └── review.api.ts     # createReview, voteHelpful, reportReview
 │   │   ├── components/
-│   │   │   ├── WriteReviewScreen.tsx
-│   │   │   ├── MediaPicker.tsx         # Foto + video picker
-│   │   │   ├── DiscussionScreen.tsx
-│   │   │   └── CommentItem.tsx
+│   │   │   ├── MediaPicker.tsx      # Foto + video picker
+│   │   │   ├── MediaUploadGrid.tsx  # Preview sebelum submit
+│   │   │   ├── RatingInput.tsx      # Star rating interaktif
+│   │   │   ├── CommentItem.tsx
+│   │   │   └── CommentInput.tsx     # Input + attach foto
 │   │   ├── hooks/
-│   │   │   ├── useReviews.ts
-│   │   │   └── useComments.ts
-│   │   └── review.types.ts
+│   │   │   ├── useWriteReview.ts  # Upload flow: presign → upload R2 → confirm
+│   │   │   ├── useComments.ts
+│   │   │   └── useHelpfulVote.ts    # Optimistic update
+│   │   ├── screens/
+│   │   │   ├── WriteReviewScreen.tsx
+│   │   │   └── DiscussionScreen.tsx
+│   │   ├── types/
+│   │   │   └── review.types.ts
+│   │   └── index.ts
 │   │
 │   ├── feed/
+│   │   ├── api/
+│   │   │   └── feed.api.ts
 │   │   ├── components/
-│   │   │   ├── FeedScreen.tsx
-│   │   │   └── FeedReviewCard.tsx      # FlashList item
-│   │   └── hooks/
-│   │       └── useFeed.ts              # Infinite query
+│   │   │   └── FeedReviewCard.tsx   # FlashList item — foto/video + info
+│   │   ├── hooks/
+│   │   │   └── useFeed.ts           # useInfiniteQuery
+│   │   ├── screens/
+│   │   │   └── FeedScreen.tsx
+│   │   ├── types/
+│   │   │   └── feed.types.ts
+│   │   └── index.ts
 │   │
 │   ├── profile/
+│   │   ├── api/
+│   │   │   └── profile.api.ts       # getProfile, updateProfile, follow
 │   │   ├── components/
-│   │   │   ├── ProfileScreen.tsx
-│   │   │   ├── ListCard.tsx
-│   │   │   ├── SavedPlaceGrid.tsx
-│   │   │   └── PhotoGrid.tsx
-│   │   └── hooks/
-│   │       ├── useProfile.ts
-│   │       └── useLists.ts
+│   │   │   ├── ProfileHeader.tsx    # Avatar, stats, follow button
+│   │   │   ├── StatsRow.tsx         # Places / Followers / Following / Reviews
+│   │   │   ├── ListCard.tsx         # Card koleksi tempat
+│   │   │   ├── SavedPlaceGrid.tsx   # 2-col grid saved places
+│   │   │   └── PhotoGrid.tsx        # 2-col grid foto dari semua review
+│   │   ├── hooks/
+│   │   │   ├── useProfile.ts
+│   │   │   ├── useFollow.ts         # Optimistic update
+│   │   │   └── useLists.ts
+│   │   ├── screens/
+│   │   │   ├── ProfileScreen.tsx    # Own profile
+│   │   │   ├── UserProfileScreen.tsx  # Other user's profile
+│   │   │   └── ListDetailScreen.tsx
+│   │   ├── types/
+│   │   │   └── profile.types.ts
+│   │   └── index.ts
 │   │
-│   └── auth/
+│   └── lists/
+│       ├── api/
+│       │   └── lists.api.ts         # createList, addItem, saveList
 │       ├── components/
-│       │   ├── LoginScreen.tsx
-│       │   └── RegisterScreen.tsx
+│       │   └── AddToListSheet.tsx   # Bottom sheet pilih list
 │       ├── hooks/
-│       │   └── useAuth.ts
-│       └── auth.store.ts               # Zustand: user session
+│       │   └── useMyLists.ts
+│       ├── screens/
+│       │   └── CreateListScreen.tsx
+│       ├── types/
+│       │   └── lists.types.ts
+│       └── index.ts
 │
 ├── shared/
 │   ├── api/
-│   │   ├── client.ts                   # Axios instance + interceptor
-│   │   └── endpoints.ts
+│   │   ├── client.ts       # Axios instance + interceptor (token inject + refresh)
+│   │   ├── queryKeys.ts    # Centralized query key factory
+│   │   └── types.ts        # ApiResponse<T>, PaginatedResponse<T>
+│   │
 │   ├── components/
-│   │   ├── BottomSheet.tsx             # Reanimated generic sheet
-│   │   ├── MediaViewer.tsx             # Full screen foto/video
-│   │   ├── Avatar.tsx
-│   │   ├── RatingStars.tsx
-│   │   └── EmptyState.tsx
+│   │   ├── ui/
+│   │   │   ├── Avatar.tsx
+│   │   │   ├── Badge.tsx
+│   │   │   ├── Button.tsx
+│   │   │   ├── Divider.tsx
+│   │   │   ├── EmptyState.tsx
+│   │   │   ├── ErrorState.tsx
+│   │   │   ├── LoadingSpinner.tsx
+│   │   │   ├── RatingStars.tsx      # Display only
+│   │   │   └── SkeletonLoader.tsx
+│   │   ├── BottomSheet.tsx          # Generic Reanimated bottom sheet
+│   │   ├── MediaViewer.tsx          # Full screen foto/video modal
+│   │   └── KeyboardAwareView.tsx
+│   │
 │   ├── hooks/
-│   │   ├── useLocation.ts              # Device GPS
-│   │   └── useUpload.ts               # Upload ke R2 via presigned URL
-│   └── constants/
-│       ├── categories.ts
-│       └── queryKeys.ts
+│   │   ├── useUpload.ts             # Presigned URL → upload R2 → confirm
+│   │   ├── useDebounce.ts
+│   │   └── useAppState.ts           # Foreground/background detection
+│   │
+│   ├── constants/
+│   │   ├── categories.ts            # ['cafe', 'bar', 'restaurant', ...]
+│   │   ├── queryKeys.ts
+│   │   └── config.ts                # API_URL, R2_URL
+│   │
+│   ├── theme/
+│   │   ├── colors.ts
+│   │   ├── typography.ts
+│   │   ├── spacing.ts
+│   │   └── index.ts
+│   │
+│   └── utils/
+│       ├── formatDistance.ts        # "1.2 км"
+│       ├── formatDate.ts            # "2 дня назад"
+│       └── formatCount.ts           # "1.2k"
 │
-└── store/
-    └── auth.store.ts                   # Global auth state (Zustand)
+└── navigation/
+    ├── RootNavigator.tsx            # Auth check → AuthStack | AppTabs
+    ├── AuthStackNavigator.tsx       # Login, Register
+    ├── AppTabNavigator.tsx          # 5 tabs
+    ├── MapStackNavigator.tsx        # Map → PlaceDetail → WriteReview → Discussion
+    ├── FeedStackNavigator.tsx       # Feed → PlaceDetail → ...
+    ├── ProfileStackNavigator.tsx    # Profile → UserProfile → ListDetail → ...
+    ├── types.ts                     # RootStackParamList, TabParamList, dll
+    └── index.ts
 ```
