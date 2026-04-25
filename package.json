@@ -7,7 +7,9 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "dev": "npm run ios --reset-cache",
+    "pods": "cd ios && pod install && cd .."
   },
   "dependencies": {
     "react": "19.2.3",
