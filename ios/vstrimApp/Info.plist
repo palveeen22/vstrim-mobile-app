@@ -34,7 +34,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string>We need your location to help you find nearby hangout spots and connect with people around you.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -79,5 +79,11 @@
 		<string>Urbanist-ThinItalic.ttf</string>
 		<string>Urbanist-Italic-VariableFont_wght.ttf</string>
 	</array>
+		<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location to help you find nearby hangout spots and connect with people around you.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to help you find nearby hangout spots and connect with people around you.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array/>
 </dict>
 </plist>
