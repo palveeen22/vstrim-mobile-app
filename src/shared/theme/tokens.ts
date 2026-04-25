@@ -11,6 +11,12 @@ export const Colors = {
   primaryDark: '#3A0D7B', // pressed
   primaryDim: '#D5C9FF', // disable 
 
+  ccbrown: '#BC5A49',
+  ccbrowndark: '#813B2F',
+  ccdark: '#1F2020',
+  cccream: '#FFFCF1',
+  ccwhite: '#FFFFFF',
+
   icon: '#57626F',
   iconLight: '#A4AAB0',
 
@@ -65,7 +71,7 @@ export const Radius = {
 } as const;
 
 export const Typography = {
-    fonts: {
+  fonts: {
     // Base fonts
     regular: 'Urbanist-Regular',
     medium: 'Urbanist-Medium',
